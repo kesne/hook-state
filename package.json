@@ -1,20 +1,25 @@
 {
-  "name": "hook-state",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "build": "tsc",
-    "example": "parcel ./example/index.html"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
-  "devDependencies": {
-    "parcel": "^1.10.3",
-    "react": "^16.7.0-alpha.0",
-    "react-dom": "^16.7.0-alpha.0",
-    "redux": "^4.0.1",
-    "typescript": "^3.1.3"
-  }
+    "name": "hook-state",
+    "version": "1.0.0",
+    "description": "A simple redux-compatible hook-based state library.",
+    "main": "./lib/index.js",
+    "scripts": {
+        "build": "rm -rf ./lib && tsc",
+        "example": "parcel ./example/index.html"
+    },
+    "keywords": [
+        "react",
+        "hooks",
+        "redux",
+        "state"
+    ],
+    "author": "Jordan Gensler <jordangens@gmail.com>",
+    "license": "MIT",
+    "devDependencies": {
+        "parcel": "^1.10.3",
+        "react": "^16.7.0-alpha.0",
+        "react-dom": "^16.7.0-alpha.0",
+        "redux": "^4.0.1",
+        "typescript": "^3.1.3"
+    }
 }
