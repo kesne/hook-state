@@ -39,7 +39,7 @@ function Counter({ segment }) {
     );
 }
 
-export function Complex() {
+export default function Example() {
     return (
         <Provider store={store}>
             <div>

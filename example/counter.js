@@ -18,7 +18,7 @@ function reducer(state = 0, action) {
 
 const store = createStore(reducer);
 
-function CounterImp() {
+function Counter() {
     const increment = useDispatcher({ type: INC });
     const decrement = useDispatcher({ type: DEC });
     const count = useSelector();
@@ -34,11 +34,11 @@ function CounterImp() {
     );
 }
 
-export function Counter() {
+export default function Example() {
     return (
         <Provider store={store}>
             Simple:
-            <CounterImp />
+            <Counter />
         </Provider>
     );
 }
