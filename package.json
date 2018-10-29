@@ -4,6 +4,7 @@
     "description": "A simple redux-compatible hook-based state library.",
     "main": "./lib/index.js",
     "scripts": {
+        "prepare": "npm run build",
         "build": "rm -rf ./lib && tsc",
         "example": "parcel ./example/index.html"
     },
