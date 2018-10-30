@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useMemo, useEffect } from 'react';
+import React, { createContext, useState, useContext, useMemo, useEffect, useRef } from 'react';
 
 const StoreContext = createContext();
 
@@ -6,15 +6,17 @@ const defaultSelector = state => state;
 export function useSelector(selector = defaultSelector) {
     const store = useContext(StoreContext);
     const [state, setState] = useState(() => selector(store.getState()));
+    const lastStoreState = useRef(state);
 
     useEffect(() => {
         return store.subscribe(() => {
             const selectedState = selector(store.getState());
-            if (selectedState !== state) {
+            if (selectedState !== lastStoreState.current) {
+                lastStoreState.current = selectedState;
                 setState(selectedState);
             }
         });
-    });
+    }, [store, selector]);
 
     return state;
 }
