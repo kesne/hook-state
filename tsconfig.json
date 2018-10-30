@@ -2,7 +2,8 @@
     "compilerOptions": {
         "allowJs": true,
         "outDir": "./lib",
-        "jsx": "react"
+        "jsx": "react",
+        "esModuleInterop": true
     },
     "include": [
         "src/**/*"
