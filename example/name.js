@@ -1,37 +1,32 @@
-import React, { useState } from 'react';
-import { createStore } from 'redux';
-import { Provider, useSelector, useDispatcher } from '../src';
+import React from 'react';
+import { Provider, useWriter, useReader } from '../src';
 
-const SET_NAME = 'SET_NAME';
+function ReadName() {
+    const name = useReader('name');
 
-function reducer(state = { name: '' }, action) {
-    switch (action.type) {
-        case SET_NAME:
-            return { ...state, name: action.payload };
-        default:
-            return state;
-    }
+    // Force a render delay:
+    const start = Date.now();
+    while (Date.now() < start + 100) {}
+
+    return <div>Name in reader: {name}</div>;
 }
 
-const store = createStore(reducer);
-
 function ChangeName() {
-    const savedName = useSelector(state => state.name);
-    const [name, setName] = useState(savedName);
-    const saveName = useDispatcher({ type: 'SET_NAME', payload: name });
+    const [name, setName] = useWriter('name', 'Bob');
 
     return (
         <div>
-            <div>Saved name: {savedName}</div>
-            <div>Change name: <input value={name} onChange={e => setName(e.target.value)} /></div>
-            <button onClick={() => saveName()}>Save</button>
+            <div>
+                Change name: <input value={name} onChange={e => setName(e.target.value)} />
+            </div>
         </div>
     );
 }
 
 export default function Example() {
     return (
-        <Provider store={store}>
+        <Provider>
+            <ReadName />
             <ChangeName />
         </Provider>
     );

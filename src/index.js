@@ -1,39 +1,88 @@
 import React, { createContext, useState, useContext, useMemo, useEffect, useRef } from 'react';
+import { unstable_scheduleCallback } from 'scheduler';
 
 const StoreContext = createContext();
 
-const defaultSelector = state => state;
-export function useSelector(selector = defaultSelector) {
-    const store = useContext(StoreContext);
-    const [state, setState] = useState(() => selector(store.getState()));
-    const lastStoreState = useRef(state);
+export function Provider({ children }) {
+    const store = useMemo(() => {
+        let state = {};
+        const subscribers = new Map();
 
-    useEffect(() => {
-        return store.subscribe(() => {
-            const selectedState = selector(store.getState());
-            if (selectedState !== lastStoreState.current) {
-                lastStoreState.current = selectedState;
-                setState(selectedState);
+        const store = {
+            getState(namespace) {
+                return state[namespace];
+            },
+            modify(namespace, value) {
+                state = {
+                    ...state,
+                    [namespace]: value
+                };
+
+                unstable_scheduleCallback(() => {
+                    const subs = subscribers.get(namespace);
+                    if (subs) {
+                        subs.forEach(sub => sub(store.getState(namespace)));
+                    }
+                });
+
+                return value;
+            },
+            subscribe(namespace, fn) {
+                subscribers.set(namespace, (subscribers.get(namespace) || new Set()).add(fn));
+                return () => subscribers.delete(fn);
             }
-        });
-    }, [store, selector]);
+        };
+
+        return store;
+    }, []);
+
+    return <StoreContext.Provider value={store}>{children}</StoreContext.Provider>;
+}
+
+const defaultSelector = state => state;
+export function useReader(namespace, selector = defaultSelector) {
+    const store = useContext(StoreContext);
+    const [state, setState] = useState(() => selector(store.getState(namespace)));
+    const lastStateRef = useRef(state);
+
+    useEffect(
+        () =>
+            store.subscribe(namespace, updatedState => {
+                const selectedState = selector(updatedState);
+                if (lastStateRef.current !== selectedState) {
+                    lastStateRef.current = selectedState;
+                    setState(selectedState);
+                }
+            }),
+        [store]
+    );
 
     return state;
 }
 
-const EMPTY = {};
-export function useDispatcher(init = EMPTY) {
+export function useWriter(namespace, initialValue) {
     const store = useContext(StoreContext);
-    return useMemo(
-        () => options =>
-            store.dispatch({
-                ...init,
-                ...options
-            }),
-        [store, init]
+    const [state, setState] = useState(initialValue);
+    const lastStateRef = useRef(state);
+    const writeState = useMemo(
+        () => value => {
+            lastStateRef.current = value;
+            setState(store.modify(namespace, value));
+        },
+        [store, namespace]
     );
-}
 
-export function Provider({ store, children }) {
-    return <StoreContext.Provider value={store}>{children}</StoreContext.Provider>;
+    useEffect(
+        () =>
+            store.subscribe(namespace, updatedState => {
+                const selectedState = updatedState;
+                if (lastStateRef.current !== selectedState) {
+                    lastStateRef.current = selectedState;
+                    setState(selectedState);
+                }
+            }),
+        [store]
+    );
+
+    return [state, writeState];
 }

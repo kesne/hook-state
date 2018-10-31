@@ -2,14 +2,14 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from '../src';
 import Counter from './counter';
-import Complex from './complex';
+import Double from './double';
 import Name from './name';
 
 render(
-    <React.Fragment>
+    <React.StrictMode>
         <Counter />
-        <Complex />
+        <Double />
         <Name />
-    </React.Fragment>,
+    </React.StrictMode>,
     document.getElementById('root')
 );

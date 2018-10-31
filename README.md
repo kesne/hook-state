@@ -1,6 +1,7 @@
 # hook-state
+> NOTE: The original version of this library was based on Redux. If you want a redux solution for state management with hooks, you can use [`use-substate`](https://github.com/philipp-spiess/use-substate)
 
-An experimental state layer based on React hooks and redux.
+An experimental hook-based state layer for React that allows sharing state between components.
 
 ```
 npm install hook-state
@@ -11,44 +12,36 @@ npm install hook-state
 Provider:
 
 ```js
-import { createStore } from 'redux';
 import { Provider } from 'hook-state';
-import reducer from './reducer';
 
-const store = createStore(reducer);
-
-<Provider store={store}>
+<Provider>
     <App />
 </Provider>;
 ```
 
-Consumer:
+State reader:
 
 ```js
-import { useSelector } from 'hook-state';
+import { useReader } from 'hook-state';
 
 function MyComponent() {
-    const name = useSelector(({ name }) => name);
+    const name = useReader('name');
 
     return <div>My name is {name}</div>;
 }
 ```
 
-### Dispatching
+State writer:
 
 ```js
-import { useSelector, useDispatcher } from 'hook-state';
+import { useWriter } from 'hook-state';
 
 function ChangeName() {
-    const savedName = useSelector(state => state.name);
-    const [name, setName] = useState(savedName);
-    const saveName = useDispatcher({ type: 'SET_NAME', payload: name });
+    const [name, setName] = useWriter('name', '');
 
     return (
         <div>
-            Saved name: {name}
             Change name: <input value={name} onChange={e => setName(e.target.value)} />
-            <button onClick={() => saveName()}>Save</button>
         </div>
     );
 }

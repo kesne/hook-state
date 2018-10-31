@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Provider, useWriter } from '../src';
 
-function Counter() {
-    const [count, setCount] = useWriter('count', 0);
+function Counter({ repeater }) {
+    const [count, setCount] = useWriter('counter', 0);
 
     return (
         <div>
@@ -16,8 +16,11 @@ function Counter() {
 export default function Example() {
     return (
         <Provider>
-            Simple:
-            <Counter />
+            <div>
+                Multiple:
+                <Counter />
+                <Counter repeater />
+            </div>
         </Provider>
     );
 }
